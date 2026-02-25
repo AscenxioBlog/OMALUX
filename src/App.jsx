@@ -15,6 +15,7 @@ import LoginForm from './ui/SignUpForm/LoginForm';
 import ProductDetail from './ui/ProductDetail.jsx/ProductDetail.jsx';
 import PreOrder from './ui/PreOrder/PreOrder';
 import PreOrderProductsPage from './ui/PreOrder/PreOrderProductsPage';
+import SeoManager from './PrimaryComponent/SeoManager';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -32,6 +33,7 @@ function App() {
     <CartProvider>
       <div>
         <ScrollToTop />
+        <SeoManager />
         <Header />
         
         <Routes>
