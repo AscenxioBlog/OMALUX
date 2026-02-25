@@ -84,7 +84,7 @@ function OmasStore() {
             />
 
             <p className="text-black mt-4 text-sm md:text-base">
-              <strong>Yusuf Hassan – CEO</strong>
+              <strong>OMA EGE – CEO</strong>
             </p>
           </div>
         </div>
