@@ -7,6 +7,7 @@ import Shop from './ui/Shop/Shop';
 import About from './ui/About/About';
 import Contact from './ui/Contact/Contact';
 import { CartProvider } from './ui/Checkout/CartContext';
+import { AuthProvider } from './ui/SignUpForm/AuthContext';
 import CartPage from './ui/Checkout/CartPage';
 import CheckoutPage from './ui/Checkout/CheckoutPage';
 import { Toaster } from "react-hot-toast";
@@ -16,6 +17,10 @@ import ProductDetail from './ui/ProductDetail.jsx/ProductDetail.jsx';
 import PreOrder from './ui/PreOrder/PreOrder';
 import PreOrderProductsPage from './ui/PreOrder/PreOrderProductsPage';
 import SeoManager from './PrimaryComponent/SeoManager';
+import AdminDashboard from './ui/Admin/AdminDashboard';
+import Profile from './ui/Profile/Profile';
+import OrdersPage from './ui/Orders/OrdersPage';
+import Wishlist from './ui/Wishlist/Wishlist';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -29,12 +34,16 @@ function ScrollToTop() {
 
 
 function App() {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
   return (
+    <AuthProvider>
     <CartProvider>
       <div>
         <ScrollToTop />
         <SeoManager />
-        <Header />
+        {!isAdminRoute && <Header />}
         
         <Routes>
           <Route path="/" element={<Index />} />
@@ -49,6 +58,10 @@ function App() {
           <Route path="/product/:source/:id" element={<ProductDetail />} />
           <Route path="/register" element={<SignupForm />} />
           <Route path="/login" element={<LoginForm />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/wishlist" element={<Wishlist />} />
         
         </Routes>
 
@@ -76,9 +89,10 @@ function App() {
                 },
               }}
             />
-        <Footer />
+        {!isAdminRoute && <Footer />}
       </div>
     </CartProvider>
+    </AuthProvider>
   );
 }
 

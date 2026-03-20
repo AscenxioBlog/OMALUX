@@ -5,10 +5,13 @@ import { Autoplay, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import { Link } from 'react-router-dom';
+import { FaHeart, FaRegHeart } from 'react-icons/fa';
+import { useWishlist } from '../Wishlist/useWishlist';
 
 function Newarrival() {
   const prevRef = useRef(null);
   const nextRef = useRef(null);
+  const { toggleWishlist, isWishlisted } = useWishlist();
 
   // Make sure Swiper has access to button refs
   useEffect(() => {
@@ -94,7 +97,13 @@ function Newarrival() {
         >
           {newarrival.map((item) => (
             <SwiperSlide key={item.id}>
-              <Link to={`/product/newarrival/${item.id}`} className="flex flex-col items-center p-4 border border-gray-200 rounded shadow-sm bg-white">
+              <Link to={`/product/newarrival/${item.id}`} className="relative flex flex-col items-center p-4 border border-gray-200 rounded shadow-sm bg-white">
+                <button
+                  onClick={(e) => { e.preventDefault(); toggleWishlist(item); }}
+                  className="absolute top-3 right-3 text-xl z-10"
+                >
+                  {isWishlisted(item.id) ? <FaHeart className="text-[#FF496C]" /> : <FaRegHeart className="text-gray-400" />}
+                </button>
                 <img
                   src={item.image}
                   alt={item.description}

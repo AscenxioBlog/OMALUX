@@ -1,6 +1,7 @@
 import { useCart } from "./CartContext";
 import { Link } from "react-router-dom";
 import LottiePlayer from "../About/LottiePlayer";
+import { parsePrice, formatPrice, calculateCartTotal } from "../../utils/priceUtils";
 
 
 const CartPage = () => {
@@ -11,14 +12,7 @@ const CartPage = () => {
     decreaseQuantity,
   } = useCart();
 
-  const totalPrice = cart.reduce(
-    (total, item) => {
-      // Remove commas and convert to number
-      const price = Number(String(item.price).replace(/,/g, ''));
-      return total + price * item.quantity;
-    },
-    0
-  );
+  const totalPrice = calculateCartTotal(cart);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -50,7 +44,7 @@ const CartPage = () => {
                   <div>
                     <h3 className="text-lg font-semibold">{item.description}</h3>
                     <p className="text-gray-500 text-sm mt-1">
-                      Price: ₦{item.price}
+                      Price: {formatPrice(item.price)}
                     </p>
                   </div>
                 </div>
@@ -73,7 +67,7 @@ const CartPage = () => {
 
                 <div className="text-right sm:text-left">
                   <p className="font-bold text-lg">
-                    ₦{(Number(String(item.price).replace(/,/g, '')) * item.quantity).toLocaleString()}
+                    {formatPrice(parsePrice(item.price) * item.quantity)}
                   </p>
                   <button
                     onClick={() => removeFromCart(item.id)}

@@ -2,17 +2,25 @@ import React, { useState, useRef, useEffect } from 'react';
 import { MdSupervisorAccount, MdSearch } from 'react-icons/md';
 import { FaRegHeart } from 'react-icons/fa';
 import { IoCartOutline, IoClose, IoMenu } from 'react-icons/io5';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../ui/Checkout/CartContext';
+import { useAuth } from '../ui/SignUpForm/AuthContext';
 
 function Header() {
   const { cart } = useCart();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showMobileAccountMenu, setShowMobileAccountMenu] = useState(false);
   const [showDesktopAccountMenu, setShowDesktopAccountMenu] = useState(false);
   const mobileAccountMenuRef = useRef(null);
   const desktopAccountMenuRef = useRef(null);
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');
+  };
   const navigationLinks = [
     { to: '/', label: 'Home' },
     { to: '/shop', label: 'Shop' },
@@ -137,18 +145,23 @@ function Header() {
                 <MdSupervisorAccount />
               </button>
               
-              {/* Account Dropdown Menu */}
+              {/* Mobile account dropdown */}
               {showMobileAccountMenu && (
                 <div className="fixed right-2 mt-17 w-48 bg-white rounded-md shadow-lg py-7 z-50 border border-gray-200">
-                  <Link to="/register" className="block mx-5 px-2 py-3 mt-[-12px] text-sm text-center bg-[#FF496C] text-white rounded" onClick={() => setShowMobileAccountMenu(false)}>
-                    Sign In
-                  </Link>
-                  <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setShowMobileAccountMenu(false)}>
-                    Profile
-                  </Link>
-                  <Link to="/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setShowMobileAccountMenu(false)}>
-                    Order List
-                  </Link>
+                  {user ? (
+                    <>
+                      <p className="block px-4 py-2 text-sm font-medium text-gray-800 truncate">{user.user_metadata?.full_name || user.email}</p>
+                      <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setShowMobileAccountMenu(false)}>Profile</Link>
+                      <Link to="/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setShowMobileAccountMenu(false)}>Order List</Link>
+                      <button onClick={() => { handleLogout(); setShowMobileAccountMenu(false); }} className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Logout</button>
+                    </>
+                  ) : (
+                    <>
+                      <Link to="/register" className="block mx-5 px-2 py-3 mt-[-12px] text-sm text-center bg-[#FF496C] text-white rounded" onClick={() => setShowMobileAccountMenu(false)}>Sign In</Link>
+                      <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setShowMobileAccountMenu(false)}>Profile</Link>
+                      <Link to="/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setShowMobileAccountMenu(false)}>Order List</Link>
+                    </>
+                  )}
                 </div>
               )}
             </div>
@@ -214,19 +227,23 @@ function Header() {
                 <MdSupervisorAccount />
               </button>
               
-              {/* Account Dropdown Menu */}
+              {/* Desktop account dropdown */}
               {showDesktopAccountMenu && (
                 <div className="absolute right-0 mt-3 w-48 bg-white rounded-md shadow-lg py-7 z-50 border border-gray-200">
-                  <Link to="/register" className="block mx-5 px-2 py-3 mt-[-12px] text-sm text-center bg-[#FF496C] text-white rounded" onClick={() => setShowDesktopAccountMenu(false)}>
-                      Sign In
-                  </Link>
-
-                  <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setShowDesktopAccountMenu(false)}>
-                    Profile
-                  </Link>
-                  <Link to="/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setShowDesktopAccountMenu(false)}>
-                    Order List
-                  </Link>
+                  {user ? (
+                    <>
+                      <p className="block px-4 py-2 text-sm font-medium text-gray-800 truncate">{user.user_metadata?.full_name || user.email}</p>
+                      <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setShowDesktopAccountMenu(false)}>Profile</Link>
+                      <Link to="/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setShowDesktopAccountMenu(false)}>Order List</Link>
+                      <button onClick={() => { handleLogout(); setShowDesktopAccountMenu(false); }} className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Logout</button>
+                    </>
+                  ) : (
+                    <>
+                      <Link to="/register" className="block mx-5 px-2 py-3 mt-[-12px] text-sm text-center bg-[#FF496C] text-white rounded" onClick={() => setShowDesktopAccountMenu(false)}>Sign In</Link>
+                      <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setShowDesktopAccountMenu(false)}>Profile</Link>
+                      <Link to="/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setShowDesktopAccountMenu(false)}>Order List</Link>
+                    </>
+                  )}
                 </div>
               )}
             </div>

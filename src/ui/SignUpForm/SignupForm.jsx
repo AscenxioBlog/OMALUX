@@ -1,19 +1,54 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, CheckCircle } from 'lucide-react';
+import { supabase } from '../../supabase';
+import toast from 'react-hot-toast';
 
 function SignupForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [fullname, setFullname] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-
-  const handleDummySubmit = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
-    if (agreedToTerms) {
-      setShowAlert(true);
-      setTimeout(() => setShowAlert(false), 3000);
+
+    if (!agreedToTerms) {
+      toast.error('Please agree to terms & conditions');
+      return;
     }
+
+    setLoading(true);
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: fullname } },
+    });
+
+    if (error) {
+      toast.error(error.message);
+    } else {
+      const { error: customerError } = await supabase.from('customers').insert([{
+        customer_name: fullname,
+        customer_email: email,
+        customer_phone: '',
+        total_order: '0',
+        total_spent: '0',
+        total_amount: 0
+      }]);
+
+      if (customerError) console.error('Customer insert error:', customerError.message);
+
+      toast.success('Account created! Redirecting...');
+      setTimeout(() => navigate('/'), 1500);
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -59,7 +94,7 @@ function SignupForm() {
         </div>
 
         {/* Signup Form */}
-        <form onSubmit={handleDummySubmit} className="space-y-4">
+        <form onSubmit={handleSignup} className="space-y-4">
           {/* Full Name */}
           <div>
             <label htmlFor="fullname" className="block text-sm font-medium text-gray-700">
@@ -69,6 +104,8 @@ function SignupForm() {
               id="fullname"
               name="fullname"
               type="text"
+              value={fullname}
+              onChange={(e) => setFullname(e.target.value)}
               placeholder="Enter your full name"
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#B6B09F] focus:border-[#B6B09F] sm:text-sm"
               required
@@ -84,6 +121,8 @@ function SignupForm() {
               id="email"
               name="email"
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#B6B09F] focus:border-[#B6B09F] sm:text-sm"
               required
@@ -100,6 +139,8 @@ function SignupForm() {
                 id="password"
                 name="password"
                 type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="Create a password"
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#B6B09F] focus:border-[#B6B09F] sm:text-sm"
                 required
@@ -134,9 +175,10 @@ function SignupForm() {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-[#B6B09F] hover:bg-[#aa9d7a] text-white font-semibold rounded-md transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c7aa5c]"
+            disabled={loading}
+            className="w-full py-2 px-4 bg-[#B6B09F] hover:bg-[#aa9d7a] text-white font-semibold rounded-md transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c7aa5c] disabled:opacity-50"
           >
-            Create Account
+            {loading ? 'Creating Account...' : 'Create Account'}
           </button>
         </form>
 

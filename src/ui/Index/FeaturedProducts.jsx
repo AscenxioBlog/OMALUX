@@ -2,10 +2,13 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { featuredproducts } from '../../../Resources/FeaturedProducts';
 import { useCart } from '../Checkout/CartContext';
+import { FaHeart, FaRegHeart } from 'react-icons/fa';
+import { useWishlist } from '../Wishlist/useWishlist';
 
 
 function FeaturedProducts() {
   const { addToCart } = useCart();
+  const { toggleWishlist, isWishlisted } = useWishlist();
 
   return (
     <div className="mt-10">
@@ -27,6 +30,12 @@ function FeaturedProducts() {
               transition-transform hover:shadow-md
             "
           >
+            <button
+              onClick={(e) => { e.preventDefault(); toggleWishlist(item); }}
+              className="absolute top-3 right-3 text-xl z-10"
+            >
+              {isWishlisted(item.id) ? <FaHeart className="text-[#FF496C]" /> : <FaRegHeart className="text-gray-400" />}
+            </button>
             {/* Product Image */}
             <img
               src={item.image}

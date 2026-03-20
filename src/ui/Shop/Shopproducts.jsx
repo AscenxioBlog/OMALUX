@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { MdSearch } from "react-icons/md";
 import { Link } from 'react-router-dom';
 import { shopProductsS } from '../../../Resources/ShopProducts';
-import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
+import { FaAngleLeft, FaAngleRight, FaHeart, FaRegHeart } from "react-icons/fa";
 import { useCart } from '../Checkout/CartContext';
+import { useWishlist } from '../Wishlist/useWishlist';
 
 function Shopproducts() {
   const { addToCart } = useCart();
+  const { toggleWishlist, isWishlisted } = useWishlist();
   const [sortOption, setSortOption] = useState('date');
   const [currentPage, setCurrentPage] = useState(1);
   const [value, setValue] = useState(50);
@@ -111,8 +113,14 @@ function Shopproducts() {
               <Link
                 key={item.id}
                 to={`/product/shop/${item.id}`}
-                className="border border-gray-200 p-4 flex flex-col rounded shadow-sm bg-white"
+                className="border border-gray-200 p-4 flex flex-col rounded shadow-sm bg-white relative"
               >
+                <button
+                  onClick={(e) => { e.preventDefault(); toggleWishlist(item); }}
+                  className="absolute top-3 right-3 text-xl z-10"
+                >
+                  {isWishlisted(item.id) ? <FaHeart className="text-[#FF496C]" /> : <FaRegHeart className="text-gray-400" />}
+                </button>
                 <img
                   src={item.image}
                   alt={item.description}
