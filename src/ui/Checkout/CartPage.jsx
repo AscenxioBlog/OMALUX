@@ -1,7 +1,9 @@
 import { useCart } from "./CartContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import LottiePlayer from "../About/LottiePlayer";
 import { parsePrice, formatPrice, calculateCartTotal } from "../../utils/priceUtils";
+import { useAuth } from "../SignUpForm/AuthContext";
+import toast from "react-hot-toast";
 
 
 const CartPage = () => {
@@ -11,8 +13,19 @@ const CartPage = () => {
     increaseQuantity,
     decreaseQuantity,
   } = useCart();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const totalPrice = calculateCartTotal(cart);
+
+  const handleCheckout = () => {
+    if (!user) {
+      toast.error('Please login to proceed with checkout');
+      navigate('/login', { state: { from: { pathname: '/checkout' } } });
+      return;
+    }
+    navigate('/checkout');
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -98,12 +111,12 @@ const CartPage = () => {
               </div>
             </div>
 
-            <Link
-              to="/checkout"
+            <button
+              onClick={handleCheckout}
               className="block w-full text-center mt-6 bg-[#ff496c] text-white py-3 rounded hover:bg-green-700 transition"
             >
-              Proceed to Checkout
-            </Link>
+              {user ? 'Proceed to Checkout' : 'Login to Checkout'}
+            </button>
 
             <Link
               to="/"

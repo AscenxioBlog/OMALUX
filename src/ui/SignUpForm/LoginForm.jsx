@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { supabase } from "../../supabase";
 import toast from "react-hot-toast";
@@ -10,6 +10,10 @@ function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Get the intended destination from location state
+  const from = location.state?.from?.pathname || '/';
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -38,7 +42,7 @@ function LoginForm() {
       toast.error(error.message);
     } else {
       toast.success("Login successful! Welcome back.");
-      navigate("/");
+      navigate(from, { replace: true });
     }
 
     setLoading(false);

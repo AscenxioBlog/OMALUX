@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useCart } from "./CartContext";
 import { useAuth } from "../SignUpForm/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import { parsePrice, calculateCartTotal, formatPrice } from "../../utils/priceUtils";
 
@@ -13,6 +13,7 @@ const CheckoutPage = () => {
   const { cart, removeFromCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const total = calculateCartTotal(cart);
   const [loading, setLoading] = useState(false);
   const [paystackReady, setPaystackReady] = useState(false);
@@ -29,6 +30,20 @@ const CheckoutPage = () => {
   });
 
   useEffect(() => {
+    // Double check authentication
+    if (!user) {
+      toast.error('Please login to proceed with checkout');
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+
+    // Check if cart is empty
+    if (cart.length === 0) {
+      toast.error('Your cart is empty');
+      navigate('/cart');
+      return;
+    }
+
     if (window.PaystackPop) { setPaystackReady(true); return; }
 
     const script = document.createElement("script");
@@ -36,7 +51,7 @@ const CheckoutPage = () => {
     script.onload = () => { setPaystackReady(true); console.log("Paystack ready ✅"); };
     script.onerror = () => console.error("Paystack script failed to load ❌");
     document.body.appendChild(script);
-  }, []);
+  }, [user, cart, navigate, location]);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 

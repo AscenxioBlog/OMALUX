@@ -21,6 +21,7 @@ import AdminDashboard from './ui/Admin/AdminDashboard';
 import Profile from './ui/Profile/Profile';
 import OrdersPage from './ui/Orders/OrdersPage';
 import Wishlist from './ui/Wishlist/Wishlist';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -54,14 +55,34 @@ function App() {
           <Route path="/pre-order/products" element={<PreOrderProductsPage />} />
 
           <Route path="/cart" element={<CartPage />} />
-          <Route path='checkout' element={<CheckoutPage />}/>
+          <Route path='checkout' element={
+            <ProtectedRoute>
+              <CheckoutPage />
+            </ProtectedRoute>
+          }/>
           <Route path="/product/:source/:id" element={<ProductDetail />} />
           <Route path="/register" element={<SignupForm />} />
           <Route path="/login" element={<LoginForm />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/orders" element={<OrdersPage />} />
-          <Route path="/wishlist" element={<Wishlist />} />
+          <Route path="/admin/*" element={
+            <ProtectedRoute requireAdmin={true}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          } />
+          <Route path="/orders" element={
+            <ProtectedRoute>
+              <OrdersPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/wishlist" element={
+            <ProtectedRoute>
+              <Wishlist />
+            </ProtectedRoute>
+          } />
         
         </Routes>
 
